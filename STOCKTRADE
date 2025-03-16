@@ -1,0 +1,111 @@
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+
+class StockTradingPlatform {
+    private Map<String, Integer> portfolio;
+    private Map<String, Double> stockMarket;
+    private double balance;
+
+    public StockTradingPlatform(double initialBalance) {
+        this.portfolio = new HashMap<>();
+        this.stockMarket = new HashMap<>();
+        this.balance = initialBalance;
+        
+        // Initializing some stocks with random prices
+        stockMarket.put("AAPL", 150.0);
+        stockMarket.put("GOOGL", 2800.0);
+        stockMarket.put("AMZN", 3400.0);
+        stockMarket.put("TSLA", 800.0);
+    }
+
+    public void buyStock(String symbol, int quantity) {
+        if (!stockMarket.containsKey(symbol)) {
+            System.out.println("Stock not available.");
+            return;
+        }
+
+        double price = stockMarket.get(symbol) * quantity;
+        if (price > balance) {
+            System.out.println("Insufficient balance.");
+            return;
+        }
+
+        balance -= price;
+        portfolio.put(symbol, portfolio.getOrDefault(symbol, 0) + quantity);
+        System.out.println("Bought " + quantity + " shares of " + symbol);
+    }
+
+    public void sellStock(String symbol, int quantity) {
+        if (!portfolio.containsKey(symbol) || portfolio.get(symbol) < quantity) {
+            System.out.println("Not enough shares to sell.");
+            return;
+        }
+
+        double price = stockMarket.get(symbol) * quantity;
+        balance += price;
+        portfolio.put(symbol, portfolio.get(symbol) - quantity);
+        if (portfolio.get(symbol) == 0) {
+            portfolio.remove(symbol);
+        }
+        System.out.println("Sold " + quantity + " shares of " + symbol);
+    }
+
+    public void viewPortfolio() {
+        System.out.println("Your Portfolio:");
+        for (Map.Entry<String, Integer> entry : portfolio.entrySet()) {
+            System.out.println(entry.getKey() + " : " + entry.getValue() + " shares");
+        }
+        System.out.println("Balance: $" + balance);
+    }
+
+    public void checkStockPrice(String symbol) {
+        if (stockMarket.containsKey(symbol)) {
+            System.out.println(symbol + " current price: $" + stockMarket.get(symbol));
+        } else {
+            System.out.println("Stock not available.");
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        StockTradingPlatform platform = new StockTradingPlatform(10000.0);
+
+        while (true) {
+            System.out.println("\n1. Buy Stock\n2. Sell Stock\n3. View Portfolio\n4. Check Stock Price\n5. Exit");
+            System.out.print("Choose an option: ");
+            int choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter stock symbol to buy: ");
+                    String buySymbol = scanner.next().toUpperCase();
+                    System.out.print("Enter quantity: ");
+                    int buyQuantity = scanner.nextInt();
+                    platform.buyStock(buySymbol, buyQuantity);
+                    break;
+                case 2:
+                    System.out.print("Enter stock symbol to sell: ");
+                    String sellSymbol = scanner.next().toUpperCase();
+                    System.out.print("Enter quantity: ");
+                    int sellQuantity = scanner.nextInt();
+                    platform.sellStock(sellSymbol, sellQuantity);
+                    break;
+                case 3:
+                    platform.viewPortfolio();
+                    break;
+                case 4:
+                    System.out.print("Enter stock symbol to check price: ");
+                    String checkSymbol = scanner.next().toUpperCase();
+                    platform.checkStockPrice(checkSymbol);
+                    break;
+                case 5:
+                    System.out.println("Exiting...");
+                    scanner.close();
+                    return;
+                default:
+                    System.out.println("Invalid option. Try again.");
+            }
+        }
+    }
+}
