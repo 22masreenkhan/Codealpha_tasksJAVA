@@ -1,0 +1,52 @@
+import java.util.Scanner;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Pattern;
+
+public class ConsoleChatbot {
+    private static final Map<Pattern, String> responses = new HashMap<>();
+
+    public static void main(String[] args) {
+        // Initialize chatbot responses
+        initializeResponses();
+        
+        // Scanner for user input
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("AI: Hello! I'm your chatbot. Type 'exit' to end the chat.");
+        
+        while (true) {
+            System.out.print("You: ");
+            String input = scanner.nextLine().trim().toLowerCase();
+
+            if (input.equals("exit")) {
+                System.out.println("AI: Goodbye! Have a great day! 😊");
+                break;
+            }
+
+            String response = getResponse(input);
+            System.out.println("AI: " + response);
+        }
+
+        scanner.close();
+    }
+
+    // Function to initialize chatbot responses
+    private static void initializeResponses() {
+        responses.put(Pattern.compile(".*hello.*"), "Hi there! How can I assist you?");
+        responses.put(Pattern.compile(".*how are you.*"), "I'm just a bot, but I'm doing great! What about you?");
+        responses.put(Pattern.compile(".*your name.*"), "I'm AI Chatbot, your virtual assistant!");
+        responses.put(Pattern.compile(".*bye.*"), "Goodbye! Have a great day!");
+        responses.put(Pattern.compile(".*help.*"), "I can answer general questions. Try asking about greetings or my name.");
+        responses.put(Pattern.compile(".*who made you.*"), "I was created using Java!");
+    }
+
+    // Function to get chatbot response
+    private static String getResponse(String input) {
+        for (Map.Entry<Pattern, String> entry : responses.entrySet()) {
+            if (entry.getKey().matcher(input).matches()) {
+                return entry.getValue();
+            }
+        }
+        return "I'm not sure how to respond to that.";
+    }
+}
